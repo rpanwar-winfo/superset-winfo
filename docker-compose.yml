@@ -39,25 +39,22 @@ x-common-build: &common-build
     INCLUDE_CHROMIUM: ${INCLUDE_CHROMIUM:-false}
     INCLUDE_FIREFOX: ${INCLUDE_FIREFOX:-false}
     BUILD_TRANSLATIONS: ${BUILD_TRANSLATIONS:-false}
-    NPM_BUILD_CMD: "skip"
+    #NPM_BUILD_CMD: "skip"
 
 services:
-  nginx:
-    env_file:
-      - path: docker/.env # default
-        required: true
-      - path: docker/.env-local # optional override
-        required: false
-    image: nginx:latest
-    container_name: superset_nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    volumes:
-      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./docker/nginx/templates:/etc/nginx/templates:ro
+  #nginx:
+   # env_file:
+    #  - path: docker/.env # default
+    #image: nginx:latest
+    #container_name: superset_nginx
+    #restart: unless-stopped
+    #ports:
+    #  - "80:80"
+    #extra_hosts:
+    #  - "host.docker.internal:host-gateway"
+    #volumes:
+    #  - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    #  - ./docker/nginx/templates:/etc/nginx/templates:ro
 
   redis:
     image: redis:7
@@ -70,10 +67,7 @@ services:
 
   db:
     env_file:
-      - path: docker/.env # default
-        required: true
-      - path: docker/.env-local # optional override
-        required: false
+      - docker/.env # default
     image: postgres:16
     container_name: superset_db
     restart: unless-stopped
@@ -85,10 +79,7 @@ services:
 
   superset:
     env_file:
-      - path: docker/.env # default
-        required: true
-      - path: docker/.env-local # optional override
-        required: false
+      - docker/.env # default
     build:
       <<: *common-build
     container_name: superset_app
@@ -148,10 +139,7 @@ services:
     container_name: superset_init
     command: ["/app/docker/docker-init.sh"]
     env_file:
-      - path: docker/.env # default
-        required: true
-      - path: docker/.env-local # optional override
-        required: false
+      - docker/.env # default
     depends_on:
       db:
         condition: service_started
@@ -201,10 +189,7 @@ services:
     container_name: superset_worker
     command: ["/app/docker/docker-bootstrap.sh", "worker"]
     env_file:
-      - path: docker/.env # default
-        required: true
-      - path: docker/.env-local # optional override
-        required: false
+      - docker/.env # default
     environment:
       CELERYD_CONCURRENCY: 2
       CYPRESS_CONFIG: "${CYPRESS_CONFIG:-}"
@@ -229,10 +214,7 @@ services:
     container_name: superset_worker_beat
     command: ["/app/docker/docker-bootstrap.sh", "beat"]
     env_file:
-      - path: docker/.env # default
-        required: true
-      - path: docker/.env-local # optional override
-        required: false
+      - docker/.env # default
     restart: unless-stopped
     depends_on:
       - superset-worker
@@ -250,10 +232,7 @@ services:
     container_name: superset_tests_worker
     command: ["/app/docker/docker-bootstrap.sh", "worker"]
     env_file:
-      - path: docker/.env # default
-        required: true
-      - path: docker/.env-local # optional override
-        required: false
+      - docker/.env # default
     profiles:
       - optional
     environment:
